@@ -22,11 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: { sub: number; email: string }) {
     const cacheKey: string = `user${payload.sub}`;
-    const cachedUser: User | null = await this.cacheManager.get(cacheKey);
-    if (cachedUser) {
-      return cachedUser;
+    let user: User | null = await this.cacheManager.get(cacheKey);
+    if (user) {
+      return user;
     } else {
-      const user: User | null = await this.prisma.user.findUnique({
+      user = await this.prisma.user.findUnique({
         where: {
           id: payload.sub,
         },
